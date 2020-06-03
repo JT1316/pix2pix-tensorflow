@@ -448,8 +448,8 @@ def create_model(inputs, targets):
         # minimizing -tf.log will try to get inputs to 1
         # predict_real => 1
         # predict_fake => 0
-        nodePrint1 = predict_real + EPS
-        nodePrint2 = (1 - predict_fake) + EPS
+        nodePrint1 = predict_real + 1e-6
+        nodePrint2 = (1 - predict_fake) + 1e-6
         pOut1 = tf.Print(nodePrint1,[nodePrint1])
         pOut2 = tf.Print(nodePrint2,[nodePrint2])
         discrim_loss = (tf.reduce_mean(-(tf.log(pOut1) + tf.log(pOut2)))) #add bracket
@@ -460,7 +460,7 @@ def create_model(inputs, targets):
         gen_loss_GAN = tf.reduce_mean(-tf.log(predict_fake + EPS))
         #print(tf.abs(targets - outputs))
         #print(tf.reduce_mean(tf.abs(targets - outputs)))
-        gen_loss_L1 = tf.reduce_mean(tf.abs(targets - outputs) + EPS) #add eps
+        gen_loss_L1 = tf.reduce_mean(tf.abs(targets - outputs)) + 1e-6 #add eps
         gen_loss = gen_loss_GAN * a.gan_weight + gen_loss_L1 * a.l1_weight
 
     with tf.name_scope("discriminator_train"):
