@@ -445,7 +445,7 @@ def create_model(inputs, targets):
         # minimizing -tf.log will try to get inputs to 1
         # predict_real => 1
         # predict_fake => 0
-        discrim_loss = tf.reduce_mean(-(tf.log(predict_real + EPS) + tf.log(1 - predict_fake + EPS)))
+        discrim_loss = tf.reduce_mean(-(tf.log(predict_real + EPS) + tf.log((1 - predict_fake) + EPS))) #add bracket
 
     with tf.name_scope("generator_loss"):
         # predict_fake => 1
@@ -453,7 +453,7 @@ def create_model(inputs, targets):
         gen_loss_GAN = tf.reduce_mean(-tf.log(predict_fake + EPS))
         #print(tf.abs(targets - outputs))
         #print(tf.reduce_mean(tf.abs(targets - outputs)))
-        gen_loss_L1 = tf.reduce_mean(tf.abs(targets - outputs))
+        gen_loss_L1 = tf.reduce_mean(tf.abs(targets - outputs) + EPS) #add eps
         gen_loss = gen_loss_GAN * a.gan_weight + gen_loss_L1 * a.l1_weight
 
     with tf.name_scope("discriminator_train"):
@@ -469,7 +469,7 @@ def create_model(inputs, targets):
             gen_grads_and_vars = gen_optim.compute_gradients(gen_loss, var_list=gen_tvars)
             gen_train = gen_optim.apply_gradients(gen_grads_and_vars)
 
-    ema = tf.train.ExponentialMovingAverage(decay=0.99)
+    ema = tf.train.ExponentialMovingAverage(decay=0.99, zero_debias = True) # change
     update_losses = ema.apply([discrim_loss, gen_loss_GAN, gen_loss_L1])
 
     global_step = tf.train.get_or_create_global_step()
