@@ -448,9 +448,11 @@ def create_model(inputs, targets):
         # minimizing -tf.log will try to get inputs to 1
         # predict_real => 1
         # predict_fake => 0
-        nodePrint = -(tf.log(predict_real + EPS) + tf.log((1 - predict_fake) + EPS))
-        pOut = tf.Print(nodePrint,[nodePrint])
-        discrim_loss = (tf.reduce_mean(pOut)) #add bracket
+        nodePrint1 = predict_real + EPS
+        nodePrint2 = (1 - predict_fake) + EPS
+        pOut1 = tf.Print(nodePrint1,[nodePrint1])
+        pOut2 = tf.Print(nodePrint2,[nodePrint2])
+        discrim_loss = (tf.reduce_mean(-(tf.log(pOut1) + tf.log(pOut2)))) #add bracket
 
     with tf.name_scope("generator_loss"):
         # predict_fake => 1
