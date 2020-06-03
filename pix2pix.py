@@ -392,6 +392,8 @@ def create_generator(generator_inputs, generator_outputs_channels):
 
 
 def create_model(inputs, targets):
+    def bound(low, high, value):
+        return max(low, min(high, value))
     def create_discriminator(discrim_inputs, discrim_targets):
         n_layers = 3
         layers = []
@@ -423,7 +425,7 @@ def create_model(inputs, targets):
             output = tf.sigmoid(convolved)
             layers.append(output)
 
-        return layers[-1]
+        return bound(0,1,layers[-1])    #change
 
     with tf.variable_scope("generator"):
         out_channels = int(targets.get_shape()[-1])
@@ -445,7 +447,7 @@ def create_model(inputs, targets):
         # minimizing -tf.log will try to get inputs to 1
         # predict_real => 1
         # predict_fake => 0
-        discrim_loss = tf.reduce_mean(-(tf.log(predict_real + EPS) + tf.log((1 - predict_fake) + EPS))) #add bracket
+        discrim_loss = (tf.reduce_mean(-(tf.log(predict_real + EPS) + tf.log((1 - predict_fake) + EPS)))) #add bracket
 
     with tf.name_scope("generator_loss"):
         # predict_fake => 1
