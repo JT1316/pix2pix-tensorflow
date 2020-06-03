@@ -451,8 +451,8 @@ def create_model(inputs, targets):
         # predict_fake => 1
         # abs(targets - outputs) => 0
         gen_loss_GAN = tf.reduce_mean(-tf.log(predict_fake + EPS))
-        print(tf.abs(targets - outputs))
-        print(tf.reduce_mean(tf.abs(targets - outputs)))
+        #print(tf.abs(targets - outputs))
+        #print(tf.reduce_mean(tf.abs(targets - outputs)))
         gen_loss_L1 = tf.reduce_mean(tf.abs(targets - outputs))
         gen_loss = gen_loss_GAN * a.gan_weight + gen_loss_L1 * a.l1_weight
 
@@ -698,11 +698,11 @@ def main():
     tf.summary.scalar("generator_loss_GAN", model.gen_loss_GAN)
     tf.summary.scalar("generator_loss_L1", model.gen_loss_L1)
 
-    for var in tf.trainable_variables():
-        tf.summary.histogram(var.op.name + "/values", var)
+    #for var in tf.trainable_variables():
+    #    tf.summary.histogram(var.op.name + "/values", var)        #change
 
-    for grad, var in model.discrim_grads_and_vars + model.gen_grads_and_vars:
-        tf.summary.histogram(var.op.name + "/gradients", grad)
+    #for grad, var in model.discrim_grads_and_vars + model.gen_grads_and_vars:
+    #    tf.summary.histogram(var.op.name + "/gradients", grad)
 
     with tf.name_scope("parameter_count"):
         parameter_count = tf.reduce_sum([tf.reduce_prod(tf.shape(v)) for v in tf.trainable_variables()])
